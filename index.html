@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Transformation at Anthropic - Interactive Insights</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Apache ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+  <style>
+    body {
+      padding-bottom: 50px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    .narrative {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    /* Card Styling */
+    .insight-card {
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border: 1px solid var(--bs-border-color);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      background: var(--bs-card-bg);
+    }
+
+    .insight-card:hover, .insight-card.active {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      border-color: var(--bs-primary);
+    }
+
+    .insight-card.active {
+      background-color: var(--bs-primary-bg-subtle);
+      border-width: 2px;
+    }
+
+    .insight-card .icon-wrapper {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--bs-primary);
+    }
+
+    /* Chart Area Layout */
+    .chart-wrapper {
+      display: flex;
+      flex-direction: row;
+      height: 600px; /* Taller for gallery */
+      background: var(--bs-body-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--bs-border-color);
+    }
+
+    .chart-sidebar {
+      width: 260px;
+      background: var(--bs-secondary-bg);
+      overflow-y: auto;
+      border-right: 1px solid var(--bs-border-color);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-main {
+      flex: 1;
+      position: relative;
+      padding: 20px;
+      background: var(--bs-body-bg);
+    }
+
+    #chart-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Gallery Buttons */
+    .gallery-btn {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      color: var(--bs-body-color);
+      opacity: 0.8;
+    }
+    
+    .gallery-btn:hover {
+      background: var(--bs-tertiary-bg);
+      opacity: 1;
+      transform: translateX(3px);
+    }
+
+    .gallery-btn.active {
+      background: var(--bs-primary);
+      color: white;
+      opacity: 1;
+      box-shadow: 0 4px 6px rgba(var(--bs-primary-rgb), 0.3);
+    }
+    
+    .gallery-btn i {
+      margin-right: 10px;
+      font-size: 1.1em;
+    }
+
+    .stat-badge {
+      font-size: 0.9em;
+      padding: 0.4em 0.8em;
+      border-radius: 20px;
+      background: var(--bs-primary-bg-subtle);
+      color: var(--bs-primary-text-emphasis);
+      margin-right: 5px;
+      border: 1px solid var(--bs-primary-border-subtle);
+    }
+
+    .fade-in-text {
+      animation: fadeIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <i class="bi bi-robot me-2"></i>Anthropic Research
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Findings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Data Methodology</a>
+          </li>
+        </ul>
+        <div class="nav-item dropdown ms-auto">
+          <button class="dark-theme-toggle btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            <i class="bi bi-circle-half"></i> <span class="d-lg-none ms-2">Toggle theme</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><button class="dropdown-item active" data-bs-theme-value="light"><i class="bi bi-sun-fill me-2"></i> Light</button></li>
+            <li><button class="dropdown-item" data-bs-theme-value="dark"><i class="bi bi-moon-stars-fill me-2"></i> Dark</button></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <!-- Header -->
+    <div class="narrative mb-5">
+      <h1 class="display-4 fw-bold mb-3">How AI is Transforming Work</h1>
+      <p class="lead text-muted">
+        Visualizing data from 132 engineers and Claude Code usage logs.
+        <br>Select a key finding below to explore <strong>interactive visualizations</strong>.
+      </p>
+    </div>
+
+    <!-- Toggle Cards -->
+    <div class="row g-4 mb-4" id="insight-cards">
+      <!-- Card 1: The Full Stack Evolution -->
+      <div class="col-md-4">
+        <div class="card h-100 insight-card active" onclick="setSection(0)">
+          <div class="card-body text-center p-4">
+            <div class="icon-wrapper"><i class="bi bi-layers-fill"></i></div>
+            <h5 class="card-title">The "Full-Stack" Expansion</h5>
+            <p class="card-text small text-muted">Engineers are tackling tasks beyond their core expertise, effectively becoming 2-3x more productive.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Velocity & Feedback -->
+      <div class="col-md-4">
+        <div class="card h-100 insight-card" onclick="setSection(1)">
+          <div class="card-body text-center p-4">
+            <div class="icon-wrapper"><i class="bi bi-speedometer2"></i></div>
+            <h5 class="card-title">Accelerated Learning</h5>
+            <p class="card-text small text-muted">Tighter feedback loops mean faster iterations. Engineers learn by doing, skipping the "stuck" phase.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Neglected Tasks -->
+      <div class="col-md-4">
+        <div class="card h-100 insight-card" onclick="setSection(2)">
+          <div class="card-body text-center p-4">
+            <div class="icon-wrapper"><i class="bi bi-bandaid-fill"></i></div>
+            <h5 class="card-title">Fixing "Papercuts"</h5>
+            <p class="card-text small text-muted">27% of AI work is stuff that wouldn't have been done otherwise—tests, docs, and cleanups.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visualization Area -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow-lg border-0">
+          <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0 fw-bold text-primary" id="chart-title">Skill Expansion</h5>
+            <div>
+              <small class="text-muted me-2"><i class="bi bi-mouse"></i> Hover to interact</small>
+            </div>
+          </div>
+          
+          <div class="chart-wrapper">
+            <!-- Sidebar for 10 types -->
+            <div class="chart-sidebar">
+               <h6 class="text-secondary text-uppercase x-small fw-bold mb-3 px-2">Visual Gallery</h6>
+               <div id="gallery-buttons" class="d-grid gap-1">
+                 <!-- Generated via JS -->
+               </div>
+            </div>
+            
+            <!-- Main Chart -->
+            <div class="chart-main">
+               <div id="chart-container"></div>
+            </div>
+          </div>
+
+          <!-- Context Overlay (Bottom) -->
+          <div class="p-4 border-top bg-body-tertiary">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <p id="chart-desc" class="mb-0 fs-5 fade-in-text">
+                  Description goes here...
+                </p>
+              </div>
+              <div class="col-md-4 text-end">
+                 <div class="stat-badge d-inline-block mb-1"><i class="bi bi-graph-up-arrow"></i> +50% Productivity</div>
+                 <div class="stat-badge d-inline-block"><i class="bi bi-check2-circle"></i> 37% Feature Impl.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Theme Toggling
+    const themeButtons = document.querySelectorAll('[data-bs-theme-value]');
+    const htmlElement = document.documentElement;
+    const navbar = document.querySelector('.navbar');
+
+    themeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const theme = btn.getAttribute('data-bs-theme-value');
+        htmlElement.setAttribute('data-bs-theme', theme);
+        themeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        if(theme === 'dark') {
+          navbar.classList.add('navbar-dark', 'bg-dark');
+          navbar.classList.remove('navbar-light', 'bg-light');
+        } else {
+          navbar.classList.remove('navbar-dark', 'bg-dark');
+          navbar.classList.add('navbar-light', 'bg-light');
+        }
+
+        if(myChart) {
+          myChart.dispose();
+          myChart = echarts.init(document.getElementById('chart-container'), theme === 'dark' ? 'dark' : 'macarons');
+          renderActiveChart();
+        }
+      });
+    });
+
+    // --- CHART LOGIC ---
+    let myChart = echarts.init(document.getElementById('chart-container'), 'macarons');
+    let currentSection = 0;
+    let currentChartType = 0;
+
+    window.addEventListener('resize', () => myChart.resize());
+
+    // --- DATA & CONFIGURATIONS ---
+
+    // SECTION 1: FULL STACK EXPANSION
+    const section1Charts = [
+      { name: "Radar: Skill Shape", icon: "bi-pentagon", type: "radar" },
+      { name: "Bar Race: Learning", icon: "bi-bar-chart", type: "bar-race" },
+      { name: "Sunburst: Hierarchy", icon: "bi-pie-chart", type: "sunburst" },
+      { name: "Scatter: Confidence", icon: "bi-arrows-move", type: "scatter" },
+      { name: "ThemeRiver: Trend", icon: "bi-water", type: "river" },
+      { name: "Graph: Knowledge Map", icon: "bi-share", type: "graph" },
+      { name: "Pie: Time Allocation", icon: "bi-pie-chart-fill", type: "pie" },
+      { name: "Parallel: Profile", icon: "bi-distribute-vertical", type: "parallel" },
+      { name: "Heatmap: Team Skills", icon: "bi-grid-3x3", type: "heatmap" },
+      { name: "Gauge: Capability Score", icon: "bi-speedometer", type: "gauge" },
+    ];
+
+    // SECTION 2: VELOCITY & LEARNING
+    const section2Charts = [
+      { name: "Line: Commits/Hour", icon: "bi-graph-up", type: "line" },
+      { name: "Gauge: Velocity", icon: "bi-speedometer2", type: "gauge-speed" },
+      { name: "Bar Race: Tasks", icon: "bi-list-ol", type: "bar-race-tasks" },
+      { name: "Boxplot: Cycle Time", icon: "bi-box", type: "boxplot" },
+      { name: "Waterfall: Time Saved", icon: "bi-water", type: "waterfall" },
+      { name: "Funnel: Idea to Prod", icon: "bi-filter", type: "funnel" },
+      { name: "Area: Output Volume", icon: "bi-area-chart", type: "area" },
+      { name: "Scatter: Complexity", icon: "bi-bullseye", type: "scatter-complex" },
+      { name: "Mixed: Output/Headcount", icon: "bi-people", type: "mixed" },
+      { name: "Candlestick: Sprints", icon: "bi-bar-chart-steps", type: "candlestick" },
+    ];
+
+    // SECTION 3: NEGLECTED TASKS (PAPERCUTS)
+    const section3Charts = [
+      { name: "Stacked Bar: Work Type", icon: "bi-stack", type: "stacked-bar" },
+      { name: "Treemap: Backlog", icon: "bi-grid", type: "treemap" },
+      { name: "Pie: Debt vs Feature", icon: "bi-circle-half", type: "pie-debt" },
+      { name: "Line: Debt Reduction", icon: "bi-graph-down", type: "line-debt" },
+      { name: "Bubble: Impact/Effort", icon: "bi-circle", type: "bubble" },
+      { name: "Pictorial: Bugs Squashed", icon: "bi-bug", type: "pictorial" },
+      { name: "Rose: Task Variety", icon: "bi-flower1", type: "rose" },
+      { name: "Heatmap: Legacy Activity", icon: "bi-bricks", type: "heat-legacy" },
+      { name: "Sankey: Resource Flow", icon: "bi-arrow-right-circle", type: "sankey" },
+      { name: "Bar: Pos/Neg Impact", icon: "bi-arrow-down-up", type: "bar-impact" },
+    ];
+
+    const sections = [
+      { title: "The 'Full-Stack' Expansion", desc: "Engineers are moving from specialists to generalists. A backend engineer can now confidently handle Frontend, Database, and DevOps tasks.", charts: section1Charts },
+      { title: "Accelerated Learning Loops", desc: "The time between 'idea' and 'implementation' is collapsing. Iterations are 10x faster because Claude removes the 'stuck' phase of coding.", charts: section2Charts },
+      { title: "Fixing 'Papercuts'", desc: "27% of AI work goes to tasks that were previously too tedious: writing tests, updating docs, and refactoring legacy code. The 'to-do' pile is finally shrinking.", charts: section3Charts }
+    ];
+
+    // --- MAIN LOGIC ---
+
+    function setSection(index) {
+      currentSection = index;
+      currentChartType = 0; // Reset to first chart
+      
+      // Update UI cards
+      document.querySelectorAll('.insight-card').forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+      });
+
+      // Update Text
+      const titleEl = document.getElementById('chart-title');
+      titleEl.style.opacity = 0;
+      setTimeout(() => { titleEl.innerText = sections[index].title; titleEl.style.opacity = 1; }, 200);
+
+      const descEl = document.getElementById('chart-desc');
+      descEl.innerHTML = sections[index].desc;
+      descEl.classList.remove('fade-in-text');
+      void descEl.offsetWidth; 
+      descEl.classList.add('fade-in-text');
+
+      // Update Sidebar
+      renderGalleryButtons();
+      
+      // Render Chart
+      renderActiveChart();
+    }
+
+    function renderGalleryButtons() {
+      const container = document.getElementById('gallery-buttons');
+      container.innerHTML = '';
+      
+      sections[currentSection].charts.forEach((chart, i) => {
+        const btn = document.createElement('button');
+        btn.className = `btn gallery-btn ${i === currentChartType ? 'active' : ''}`;
+        btn.innerHTML = `<i class="bi ${chart.icon}"></i> ${chart.name}`;
+        btn.onclick = () => {
+          currentChartType = i;
+          renderGalleryButtons(); // re-render to update active class
+          renderActiveChart();
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function renderActiveChart() {
+      myChart.clear();
+      myChart.showLoading({
+        text: 'Analyzing Data...',
+        color: '#0d6efd',
+        textColor: '#0d6efd',
+        maskColor: 'rgba(255, 255, 255, 0.8)'
+      });
+      
+      const type = sections[currentSection].charts[currentChartType].type;
+      
+      // Small delay to simulate processing and allow loading animation
+      setTimeout(() => {
+        const option = getChartOption(type);
+        myChart.hideLoading();
+        myChart.setOption(option, true); // true = not merge
+      }, 300);
+    }
+
+    // --- CHART OPTION FACTORY (Enhanced) ---
+    function getChartOption(type) {
+      const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+      const textColor = isDark ? '#ddd' : '#333';
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
+      
+      // Professional Palette
+      const palette = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4'];
+
+      const commonConfig = {
+        backgroundColor: 'transparent',
+        textStyle: { fontFamily: 'Segoe UI, sans-serif' },
+        tooltip: { 
+          trigger: 'axis', 
+          backgroundColor: isDark ? 'rgba(50,50,50,0.9)' : 'rgba(255,255,255,0.9)',
+          borderColor: isDark ? '#555' : '#ddd',
+          textStyle: { color: textColor },
+          confine: true
+        },
+        grid: { containLabel: true, left: '5%', right: '5%', bottom: '10%', top: '15%' },
+        legend: { textStyle: { color: textColor }, bottom: 0 },
+        animationDuration: 1500,
+        animationEasing: 'cubicOut'
+      };
+
+      switch(type) {
+        // --- SECTION 1: FULL STACK ---
+        case 'radar':
+          return {
+            ...commonConfig,
+            tooltip: { trigger: 'item' },
+            radar: {
+              indicator: [
+                { name: 'Backend', max: 100 },
+                { name: 'Frontend', max: 100 },
+                { name: 'DevOps', max: 100 },
+                { name: 'Design', max: 100 },
+                { name: 'Data Sci', max: 100 },
+                { name: 'Security', max: 100 }
+              ],
+              radius: '70%',
+              axisName: { color: textColor, fontWeight: 'bold' },
+              splitArea: {
+                areaStyle: {
+                  color: isDark ? ['#333', '#444'] : ['#f8f9fa', '#e9ecef']
+                }
+              }
+            },
+            series: [{
+              type: 'radar',
+              symbol: 'circle',
+              symbolSize: 8,
+              data: [
+                {
+                  value: [90, 20, 30, 10, 15, 40],
+                  name: 'Pre-AI Scope',
+                  itemStyle: { color: '#6c757d' },
+                  areaStyle: { opacity: 0.2 }
+                },
+                {
+                  value: [95, 85, 80, 60, 80, 85],
+                  name: 'AI-Augmented Scope',
+                  itemStyle: { color: '#0d6efd' },
+                  areaStyle: { opacity: 0.4, color: new echarts.graphic.RadialGradient(0.5, 0.5, 1, [{ offset: 0, color: 'rgba(13, 110, 253, 0.1)' }, { offset: 1, color: 'rgba(13, 110, 253, 0.6)' }]) }
+                }
+              ]
+            }]
+          };
+        
+        case 'bar-race':
+          return {
+            ...commonConfig,
+            title: { text: 'Skill Confidence Growth', left: 'center', textStyle: { color: textColor } },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            xAxis: { max: 100, splitLine: { show: false } },
+            yAxis: { type: 'category', data: ['Security', 'Data', 'DevOps', 'Frontend'], inverse: true, axisLabel: { color: textColor, fontSize: 14 } },
+            series: [{
+              type: 'bar',
+              data: [85, 80, 75, 85],
+              realtimeSort: true,
+              itemStyle: {
+                borderRadius: [0, 20, 20, 0],
+                color: (params) => palette[params.dataIndex % palette.length]
+              },
+              label: { show: true, position: 'right', formatter: '{c}%' },
+              showBackground: true,
+              backgroundStyle: { color: 'rgba(180, 180, 180, 0.2)', borderRadius: [0, 20, 20, 0] },
+              animationDuration: 2000,
+              animationDelay: (idx) => idx * 200
+            }]
+          };
+
+        case 'sunburst':
+          return {
+            ...commonConfig,
+            tooltip: { trigger: 'item' },
+            series: {
+              type: 'sunburst',
+              radius: ['10%', '80%'],
+              itemStyle: { borderRadius: 5, borderColor: isDark ? '#222' : '#fff', borderWidth: 2 },
+              label: { rotate: 'radial' },
+              data: [
+                { name: 'Core', itemStyle: { color: '#5470c6' }, children: [{ name: 'Java', value: 20 }, { name: 'Python', value: 20 }] },
+                { name: 'Expanded', itemStyle: { color: '#91cc75' }, children: [{ name: 'React', value: 15 }, { name: 'K8s', value: 10 }, { name: 'SQL', value: 15 }] },
+                { name: 'Management', itemStyle: { color: '#fac858' }, children: [{ name: 'Review', value: 10 }, { name: 'Arch.', value: 10 }] }
+              ]
+            }
+          };
+
+        case 'scatter':
+          return {
+            ...commonConfig,
+            title: { text: 'Task Complexity vs. Confidence', left: 'center', textStyle: { color: textColor } },
+            xAxis: { name: 'Task Complexity', splitLine: { show: false } },
+            yAxis: { name: 'Confidence Level', splitLine: { lineStyle: { type: 'dashed' } } },
+            series: [
+              {
+                name: 'Without AI',
+                type: 'scatter',
+                symbolSize: 20,
+                data: [[20, 90], [80, 20], [50, 50], [30, 80], [70, 30]],
+                itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.3)', color: '#ee6666' }
+              },
+              {
+                name: 'With Claude',
+                type: 'scatter',
+                symbolSize: 20,
+                data: [[20, 95], [80, 85], [50, 90], [90, 80], [70, 88]],
+                itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.3)', color: '#91cc75' }
+              }
+            ]
+          };
+
+        case 'river':
+          return {
+            ...commonConfig,
+            tooltip: { trigger: 'axis', axisPointer: { type: 'line', lineStyle: { color: 'rgba(0,0,0,0.2)', width: 1, type: 'solid' } } },
+            singleAxis: { top: 50, bottom: 50, axisTick: {}, axisLabel: {}, type: 'time', splitLine: { show: true, lineStyle: { type: 'dashed', opacity: 0.2 } } },
+            series: [{
+              type: 'themeRiver',
+              emphasis: { itemStyle: { shadowBlur: 20, shadowColor: 'rgba(0, 0, 0, 0.8)' } },
+              data: [
+                ['2025-01-01', 10, 'Backend'], ['2025-02-01', 15, 'Backend'], ['2025-03-01', 12, 'Backend'],
+                ['2025-01-01', 2, 'Frontend'], ['2025-02-01', 10, 'Frontend'], ['2025-03-01', 25, 'Frontend'],
+                ['2025-01-01', 1, 'DevOps'], ['2025-02-01', 8, 'DevOps'], ['2025-03-01', 18, 'DevOps']
+              ].map(item => [item[0], item[1], item[2]])
+            }]
+          };
+
+        case 'graph':
+          return {
+            ...commonConfig,
+            tooltip: {},
+            animationDurationUpdate: 1500,
+            series: [{
+              type: 'graph',
+              layout: 'force',
+              symbolSize: 60,
+              roam: true,
+              label: { show: true, fontSize: 12 },
+              edgeSymbol: ['circle', 'arrow'],
+              edgeSymbolSize: [4, 10],
+              force: { repulsion: 250, edgeLength: 100 },
+              data: [
+                { name: 'Engineer', symbolSize: 80, itemStyle: { color: '#5470c6' } },
+                { name: 'Database', category: 1 }, { name: 'React UI', category: 1 }, { name: 'AWS', category: 1 }, { name: 'Analytics', category: 1 }
+              ],
+              links: [
+                { source: 'Engineer', target: 'Database' }, { source: 'Engineer', target: 'React UI' }, { source: 'Engineer', target: 'AWS' }, { source: 'Engineer', target: 'Analytics' }
+              ],
+              lineStyle: { opacity: 0.9, width: 2, curveness: 0 }
+            }]
+          };
+
+        case 'pie':
+           return {
+             ...commonConfig,
+             tooltip: { trigger: 'item', formatter: '{b}: {d}%' },
+             series: [{
+               type: 'pie',
+               radius: ['40%', '70%'],
+               avoidLabelOverlap: false,
+               itemStyle: { borderRadius: 10, borderColor: isDark ? '#222' : '#fff', borderWidth: 2 },
+               label: { show: false, position: 'center' },
+               emphasis: { label: { show: true, fontSize: '20', fontWeight: 'bold' } },
+               data: [
+                 { value: 40, name: 'Coding (Core)' },
+                 { value: 30, name: 'Architecting' },
+                 { value: 20, name: 'Reviewing AI' },
+                 { value: 10, name: 'Learning' }
+               ]
+             }]
+           };
+
+        case 'parallel':
+           return {
+             ...commonConfig,
+             parallelAxis: [
+               { dim: 0, name: 'Backend' }, { dim: 1, name: 'Frontend' }, { dim: 2, name: 'Ops' }, { dim: 3, name: 'Design' }
+             ],
+             series: {
+               type: 'parallel',
+               lineStyle: { width: 3 },
+               data: [
+                 { value: [10, 2, 2, 1], name: 'Junior Pre-AI', lineStyle: { color: '#ee6666' } },
+                 { value: [9, 8, 7, 5], name: 'Junior With AI', lineStyle: { color: '#91cc75' } }
+               ]
+             }
+           };
+
+        case 'heatmap':
+           return {
+             ...commonConfig,
+             tooltip: { position: 'top' },
+             grid: { height: '50%', top: '10%' },
+             xAxis: { type: 'category', data: ['Engineer A', 'Engineer B', 'Engineer C'], splitArea: { show: true } },
+             yAxis: { type: 'category', data: ['Frontend', 'Backend', 'DevOps'], splitArea: { show: true } },
+             visualMap: { min: 0, max: 10, calculable: true, orient: 'horizontal', left: 'center', bottom: '15%' },
+             series: [{
+               type: 'heatmap',
+               data: [[0,0,9],[0,1,2],[0,2,1],[1,0,8],[1,1,8],[1,2,7],[2,0,9],[2,1,9],[2,2,9]],
+               label: { show: true },
+               itemStyle: { emphasis: { shadowBlur: 10, shadowColor: 'rgba(0, 0, 0, 0.5)' } }
+             }]
+           };
+
+        case 'gauge':
+           return {
+             ...commonConfig,
+             series: [{
+               type: 'gauge',
+               center: ['50%', '65%'], // Lower the center so the semi-circle fills the top
+               startAngle: 180,
+               endAngle: 0,
+               min: 0,
+               max: 100,
+               splitNumber: 10,
+               itemStyle: { color: '#0d6efd', shadowColor: 'rgba(0,138,255,0.45)', shadowBlur: 10, shadowOffsetX: 2, shadowOffsetY: 2 },
+               progress: { show: true, width: 30, roundCap: true },
+               pointer: { show: true, width: 5, length: '70%', itemStyle: { color: 'auto' } },
+               axisLine: { roundCap: true, lineStyle: { width: 30, color: [[1, isDark ? '#333' : '#E6EBF8']] } }, // Background track
+               axisTick: { show: false },
+               splitLine: { show: false },
+               axisLabel: { show: false },
+               title: {
+                 show: true,
+                 offsetCenter: [0, '35%'], // Position title below the gauge
+                 fontSize: 20,
+                 fontWeight: 'bold',
+                 color: textColor
+               },
+               detail: {
+                 valueAnimation: true,
+                 width: '60%',
+                 lineHeight: 40,
+                 borderRadius: 8,
+                 offsetCenter: [0, '-15%'], // Position value inside the arc
+                 fontSize: 50,
+                 fontWeight: 'bolder',
+                 formatter: '{value}%',
+                 color: 'inherit'
+               },
+               data: [{ value: 92, name: 'Full Stack Capability' }]
+             }]
+           };
+
+        // --- SECTION 2: VELOCITY ---
+        case 'line':
+           return {
+             ...commonConfig,
+             title: { text: 'Commits per Hour (Velocity)', left: 'center', textStyle: { color: textColor } },
+             tooltip: { trigger: 'axis' },
+             xAxis: { type: 'category', boundaryGap: false, data: months },
+             yAxis: { type: 'value' },
+             series: [
+               { name: 'Manual', type: 'line', data: [10, 12, 11, 13, 15, 14, 16, 18], lineStyle: { type: 'dashed' } },
+               { name: 'AI Assisted', type: 'line', smooth: true, data: [15, 30, 45, 80, 120, 150, 180, 210], areaStyle: { opacity: 0.3 }, lineStyle: { width: 4 } }
+             ]
+           };
+
+        case 'gauge-speed':
+           return {
+             ...commonConfig,
+             series: [{
+               type: 'gauge',
+               center: ['50%', '65%'],
+               startAngle: 180,
+               endAngle: 0,
+               min: 0,
+               max: 200,
+               splitNumber: 5,
+               axisLine: { 
+                 lineStyle: { 
+                   width: 30, 
+                   color: [[0.2, '#91cc75'], [0.8, '#5470c6'], [1, '#ee6666']] 
+                 } 
+               },
+               pointer: { 
+                 itemStyle: { color: 'auto' },
+                 width: 8,
+                 length: '70%'
+               },
+               axisTick: { distance: -30, length: 8, lineStyle: { color: '#fff', width: 1 } },
+               splitLine: { distance: -30, length: 30, lineStyle: { color: '#fff', width: 2 } },
+               axisLabel: { color: 'inherit', distance: 35, fontSize: 12 },
+               detail: {
+                 valueAnimation: true,
+                 formatter: '{value}%',
+                 color: 'inherit',
+                 fontSize: 45,
+                 fontWeight: 'bolder',
+                 offsetCenter: [0, '-20%']
+               },
+               title: {
+                 offsetCenter: [0, '30%'],
+                 fontSize: 20,
+                 fontWeight: 'bold',
+                 color: textColor
+               },
+               data: [{ value: 180, name: 'Velocity Increase' }]
+             }]
+           };
+
+        case 'bar-race-tasks':
+           return {
+             ...commonConfig,
+             yAxis: { type: 'category', data: ['Prototype', 'MVP', 'V1 Launch', 'Scale'], inverse: true, axisLabel: { fontSize: 14 } },
+             xAxis: { type: 'value', name: 'Time to Complete (Days)', inverse: true }, // Inverse to show speed!
+             series: [
+               { name: 'Manual', type: 'bar', data: [5, 15, 30, 60], label: { show: true } },
+               { name: 'With AI', type: 'bar', data: [1, 3, 7, 15], label: { show: true }, itemStyle: { color: '#91cc75' } }
+             ]
+           };
+
+        case 'boxplot':
+           return {
+             ...commonConfig,
+             title: { text: 'Cycle Time Variance', left: 'center', textStyle: { color: textColor } },
+             xAxis: { data: ['Q1 (Manual)', 'Q2', 'Q3', 'Q4 (AI Driven)'] },
+             yAxis: { name: 'Days' },
+             series: [{
+               type: 'boxplot',
+               itemStyle: { borderColor: '#5470c6', borderWidth: 2 },
+               data: [
+                 [2, 4, 5, 7, 12], // Manual: High variance, slow
+                 [2, 3, 5, 6, 9],
+                 [1, 2, 3, 5, 7],
+                 [1, 1, 2, 3, 4]   // AI: Low variance, fast
+               ]
+             }]
+           };
+
+        case 'waterfall':
+           return {
+             ...commonConfig,
+             title: { text: 'Where the Time Went', left: 'center', textStyle: { color: textColor } },
+             xAxis: { type: 'category', data: ['Original Time', 'AI Savings', 'Overhead', 'New Time'] },
+             yAxis: { type: 'value' },
+             series: [
+               { name: 'Placeholder', type: 'bar', stack: 'total', itemStyle: { borderColor: 'transparent', color: 'transparent' }, data: [0, 20, 20, 0] },
+               { name: 'Time', type: 'bar', stack: 'total', label: { show: true, position: 'top' }, data: [40, 20, 5, 25], itemStyle: { color: (params) => params.dataIndex === 1 ? '#91cc75' : '#5470c6' } }
+             ]
+           };
+           
+        case 'funnel':
+           return {
+             ...commonConfig,
+             title: { text: 'Idea to Production Funnel', left: 'center', textStyle: { color: textColor } },
+             series: [{
+               type: 'funnel', left: '10%', top: 60, bottom: 60, width: '80%', sort: 'descending',
+               label: { show: true, position: 'inside' },
+               data: [
+                 { value: 100, name: 'Ideas Generated' },
+                 { value: 80, name: 'Prototyped' },
+                 { value: 60, name: 'Production Ready' } // Much higher conversion rate
+               ]
+             }]
+           };
+           
+        case 'area':
+           return {
+             ...commonConfig,
+             xAxis: { boundaryGap: false, data: months },
+             yAxis: { type: 'value', name: 'Code Volume' },
+             series: [
+               { name: 'Standard Output', type: 'line', stack: 'Total', areaStyle: {}, smooth: true, data: [120, 132, 101, 134, 90, 110, 120, 130] },
+               { name: 'AI Boost', type: 'line', stack: 'Total', areaStyle: {}, smooth: true, itemStyle: { color: '#91cc75' }, data: [20, 50, 90, 100, 200, 220, 210, 250] }
+             ]
+           };
+
+        case 'scatter-complex':
+           return {
+             ...commonConfig,
+             xAxis: { name: 'Complexity' }, yAxis: { name: 'Time Taken' },
+             series: [
+               { type: 'scatter', data: [[10, 5], [20, 10], [50, 15], [80, 25]], symbolSize: 15, name: 'AI' },
+               { type: 'scatter', data: [[10, 15], [20, 30], [50, 60], [80, 120]], symbolSize: 15, name: 'Human' }
+             ]
+           };
+
+        case 'mixed':
+           return {
+             ...commonConfig,
+             xAxis: { data: months },
+             yAxis: [{ type: 'value', name: 'Output' }, { type: 'value', name: 'Headcount', alignTicks: true }],
+             series: [
+               { type: 'bar', data: [10, 20, 40, 80, 120, 150, 180, 200], name: 'Output', itemStyle: { borderRadius: [5,5,0,0] } },
+               { type: 'line', yAxisIndex: 1, data: [10, 10, 11, 11, 11, 12, 12, 12], name: 'Headcount', lineStyle: { width: 3, type: 'dashed' } }
+             ]
+           };
+
+        case 'candlestick':
+           return {
+             ...commonConfig,
+             xAxis: { data: ['Sprint 1', 'Sprint 2', 'Sprint 3', 'Sprint 4'] },
+             yAxis: { scale: true },
+             series: [{ type: 'candlestick', data: [[20, 34, 10, 38], [40, 35, 30, 50], [31, 38, 33, 44], [38, 55, 32, 60]] }]
+           };
+
+        // --- SECTION 3: PAPERCUTS ---
+        case 'stacked-bar':
+           return {
+             ...commonConfig,
+             legend: { top: 0, textStyle: { color: textColor } },
+             xAxis: { type: 'value', name: 'Hours Spent' },
+             yAxis: { type: 'category', data: ['Standard Team', 'AI Augmented'] },
+             series: [
+               { name: 'Features', type: 'bar', stack: 'total', data: [320, 450], itemStyle: { color: '#5470c6' } },
+               { name: 'Tech Debt', type: 'bar', stack: 'total', data: [120, 20], itemStyle: { color: '#ee6666' } }, // Debt shrinks!
+               { name: 'Tests & Docs', type: 'bar', stack: 'total', data: [40, 150], itemStyle: { color: '#91cc75' } } // Neglected tasks grow!
+             ]
+           };
+
+        case 'treemap':
+           return {
+             ...commonConfig,
+             series: [{
+               type: 'treemap',
+               levels: [{ itemStyle: { gapWidth: 2 } }],
+               data: [
+                 { name: 'Neglected Work Done', value: 100, children: [
+                   { name: 'Documentation', value: 40, itemStyle: { color: '#91cc75' } },
+                   { name: 'Unit Tests', value: 30, itemStyle: { color: '#73c0de' } },
+                   { name: 'Refactoring', value: 20, itemStyle: { color: '#fac858' } },
+                   { name: 'Bug Fixes', value: 10, itemStyle: { color: '#ee6666' } }
+                 ]}
+               ]
+             }]
+           };
+
+        case 'pie-debt':
+           return {
+             ...commonConfig,
+             title: { text: 'Shift in Maintenance', left: 'center', textStyle: { color: textColor } },
+             series: [{
+               type: 'pie',
+               radius: ['50%', '70%'],
+               itemStyle: { borderRadius: 5 },
+               data: [
+                 { value: 70, name: 'New Features' },
+                 { value: 30, name: 'Maintenance (AI Handled)' } // Explicitly mention AI
+               ]
+             }]
+           };
+
+        case 'line-debt':
+           return {
+             ...commonConfig,
+             title: { text: 'Backlog Burn-down', left: 'center', textStyle: { color: textColor } },
+             xAxis: { type: 'category', data: months },
+             yAxis: { type: 'value', name: 'Open Issues' },
+             series: [{ type: 'line', smooth: true, data: [500, 480, 450, 400, 320, 200, 150, 80], areaStyle: { color: '#ffcccc' }, lineStyle: { color: '#ff0000', width: 4 } }]
+           };
+
+        case 'bubble':
+           return {
+             ...commonConfig,
+             title: { text: 'Task Impact vs Effort', left: 'center', textStyle: { color: textColor } },
+             xAxis: { name: 'Effort Required' },
+             yAxis: { name: 'Business Impact' },
+             series: [{
+               type: 'scatter',
+               symbolSize: (val) => val[2],
+               itemStyle: { color: (params) => params.data[0] < 3 ? '#91cc75' : '#5470c6' }, // Low effort is green
+               data: [
+                 [1, 9, 60], // Low effort, high impact (AI sweet spot)
+                 [2, 8, 40],
+                 [8, 5, 20], // High effort, med impact (Manual)
+                 [9, 2, 10]
+               ]
+             }]
+           };
+
+        case 'pictorial':
+           return {
+             ...commonConfig,
+             xAxis: { max: 100, splitLine: { show: false } },
+             yAxis: { data: ['Bugs Fixed'], axisLine: { show: false }, axisTick: { show: false } },
+             series: [{
+               type: 'pictorialBar',
+               symbol: 'path://M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z',
+               symbolRepeat: true,
+               symbolSize: [30, 30],
+               data: [85],
+               itemStyle: { color: '#ee6666' },
+               animationDelay: (idx) => idx * 10
+             }]
+           };
+
+        case 'rose':
+           return {
+             ...commonConfig,
+             series: [{
+               type: 'pie',
+               roseType: 'area',
+               radius: [20, 100],
+               data: [
+                 { value: 40, name: 'Docs' },
+                 { value: 38, name: 'Tests' },
+                 { value: 32, name: 'Styles' },
+                 { value: 30, name: 'CI/CD' },
+                 { value: 28, name: 'Logs' }
+               ]
+             }]
+           };
+
+        case 'heat-legacy':
+           return {
+             ...commonConfig,
+             title: { text: 'Activity on Legacy Code', left: 'center', textStyle: { color: textColor } },
+             xAxis: { type: 'category', data: ['12a', '4a', '8a', '12p', '4p', '8p'] },
+             yAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] },
+             visualMap: { min: 0, max: 10, orient: 'horizontal', left: 'center', bottom: '0%' },
+             series: [{
+               type: 'heatmap',
+               data: [[0,0,5],[0,1,1],[0,2,0],[0,3,0],[0,4,0],[1,0,3],[1,1,9],[1,2,5],[2,2,8],[3,3,7]],
+               label: { show: true }
+             }]
+           };
+
+        case 'sankey':
+           return {
+             ...commonConfig,
+             series: [{
+               type: 'sankey',
+               layout: 'none',
+               emphasis: { focus: 'adjacency' },
+               data: [{ name: 'Dev Time' }, { name: 'Features' }, { name: 'Debt' }, { name: 'Papercuts' }],
+               links: [
+                 { source: 'Dev Time', target: 'Features', value: 50 },
+                 { source: 'Dev Time', target: 'Papercuts', value: 30 }, // High flow to papercuts
+                 { source: 'Dev Time', target: 'Debt', value: 10 }
+               ]
+             }]
+           };
+
+        case 'bar-impact':
+           return {
+             ...commonConfig,
+             xAxis: { type: 'category', data: ['Q1', 'Q2', 'Q3', 'Q4'] },
+             yAxis: { type: 'value', name: 'Net Impact' },
+             series: [{
+               type: 'bar',
+               data: [-20, -10, 15, 45], // Negative to positive shift
+               itemStyle: { color: (params) => params.value > 0 ? '#91cc75' : '#ee6666' },
+               label: { show: true, position: 'top' }
+             }]
+           };
+        
+        default: return {};
+      }
+    }
+
+    // Init
+    setSection(0);
+
+  </script>
+</body>
+</html>
